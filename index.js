@@ -13,7 +13,7 @@ app.listen(PORT, () => {
   console.log(`Web server đang chạy trên cổng ${PORT}`);
 });
 
-const serverHost = process.env.MC_HOST || '9a3bedrock.mcsh.gg'; // Thay bằng IP server thực tế của bạn
+const serverHost = process.env.MC_HOST || '15.235.165.12'; // Thay bằng IP server thực tế của bạn
 const serverPort = parseInt(process.env.MC_PORT || '13681');  
 const botUsername = process.env.MC_USERNAME || 'ServerBot_AFK';
 
