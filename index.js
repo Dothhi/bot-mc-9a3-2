@@ -6,17 +6,15 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.get('/', (req, res) => {
-  res.send('Bot Bedrock AFK đang hoạt động 24/7!');
+  res.send('Bot Bedrock !');
 });
 
 app.listen(PORT, () => {
   console.log(`Web server đang chạy trên cổng ${PORT}`);
 });
 
-// 2. Cấu hình kết nối bot vào server của bạn
-// Bạn có thể thay trực tiếp IP hoặc dùng biến môi trường trên Render
-const serverHost = process.env.MC_HOST || 'IP_SERVER_CUA_BAN'; // Thay bằng IP server thực tế của bạn
-const serverPort = parseInt(process.env.MC_PORT || '13681');  // Cổng server trong file properties của bạn là 13681
+const serverHost = process.env.MC_HOST || '9a3bedrock.mcsh.gg'; // Thay bằng IP server thực tế của bạn
+const serverPort = parseInt(process.env.MC_PORT || '19132');  
 const botUsername = process.env.MC_USERNAME || 'ServerBot_AFK';
 
 function startBot() {
