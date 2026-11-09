@@ -1,7 +1,7 @@
 const bedrock = require('bedrock-protocol');
 const express = require('express');
 
-// 1. Tạo Web Server nhỏ để Render không bị đưa vào trạng thái ngủ (Sleep)
+// 1. Tạo Web Server nhỏ để Render không bị chuyển sang trạng thái Sleep (ngủ) sau 15 phút
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -14,20 +14,20 @@ app.listen(PORT, () => {
 });
 
 // 2. Cấu hình kết nối bot vào server của bạn
-// Bạn có thể thay đổi trực tiếp hoặc dùng biến môi trường (Environment Variables) trên Render
-const serverHost = process.env.MC_HOST || '9a3bedrock.mcsh.gg'; // Thay bằng IP server của bạn
-const serverPort = parseInt(process.env.MC_PORT || '19132');  // Cổng server trong file properties của bạn là 13681
+// Bạn có thể thay trực tiếp IP hoặc dùng biến môi trường trên Render
+const serverHost = process.env.MC_HOST || 'IP_SERVER_CUA_BAN'; // Thay bằng IP server thực tế của bạn
+const serverPort = parseInt(process.env.MC_PORT || '13681');  // Cổng server trong file properties của bạn là 13681
 const botUsername = process.env.MC_USERNAME || 'ServerBot_AFK';
 
 function startBot() {
-  console.log(`Đang kết nối bot tới ${serverHost}:${serverPort} (Phiên bản: 1.26.63)...`);
+  console.log(`Đang kết nối bot tới ${serverHost}:${serverPort}...`);
 
   const client = bedrock.createClient({
     host: serverHost,
     port: serverPort,
     username: botUsername,
-    offline: true,         // Vì server của bạn bật online-mode=false
-    version: '1.26.63'     // Khớp chính xác phiên bản server
+    offline: true         // Vì server của bạn bật online-mode=false
+    // Đã lược bỏ trường version cố định để thư viện tự động tương thích giao thức mới nhất của server 1.26.63
   });
 
   client.on('join', () => {
