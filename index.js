@@ -4,7 +4,7 @@ const http = require('http');
 const CONFIG = {
   host: '9a3smp.mcsh.gg',
   port: 25565,
-  username: 'Bot_AFK_247',
+  username: 'Bot_AFK_247_2',
   version: '1.20',
   targetServer: 'smp', // <-- Đổi tên server con của bạn ở đây
   reconnectDelay: 15000,
