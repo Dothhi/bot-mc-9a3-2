@@ -1,46 +1,73 @@
-const bedrock = require('bedrock-protocol');
-const express = require('express');
+const mineflayer = require('mineflayer');
+const http = require('http');
 
-// 1. Tạo Web Server nhỏ để Render không bị chuyển sang trạng thái Sleep (ngủ) sau 15 phút
-const app = express();
-const PORT = process.env.PORT || 3000;
+const CONFIG = {
+  host: '9a3.mcsh.gg',
+  port: 25565,
+  username: 'Bot_AFK_247',
+  version: '1.16',
+  viewDistance: '2',
+  reconnectDelay: 15000,
+};
 
-app.get('/', (req, res) => {
-  res.send('Bot Bedrock !');
-});
+let bot = null;
+let reconnectTimeout = null;
 
-app.listen(PORT, () => {
-  console.log(`Web server đang chạy trên cổng ${PORT}`);
-});
+function createBot() {
+  if (bot) {
+    try {
+      bot.removeAllListeners();
+      bot.quit();
+    } catch {}
+    bot = null;
+  }
 
-const serverHost = process.env.MC_HOST || '15.235.165.12'; // Thay bằng IP server thực tế của bạn
-const serverPort = parseInt(process.env.MC_PORT || '13681');  
-const botUsername = process.env.MC_USERNAME || 'ServerBot_AFK';
+  console.log('Đang kết nối...');
 
-function startBot() {
-  console.log(`Đang kết nối bot tới ${serverHost}:${serverPort}...`);
-
-  const client = bedrock.createClient({
-    host: serverHost,
-    port: serverPort,
-    username: botUsername,
-    offline: true         // Vì server của bạn bật online-mode=false
-    // Đã lược bỏ trường version cố định để thư viện tự động tương thích giao thức mới nhất của server 1.26.63
+  bot = mineflayer.createBot({
+    host: CONFIG.host,
+    port: CONFIG.port,
+    username: CONFIG.username,
+    version: CONFIG.version,
+    viewDistance: 'tiny',
+    physicsEnabled: false,
   });
 
-  client.on('join', () => {
-    console.log('-> Bot đã vào server thành công và đang treo giữ server!');
+  bot.once('spawn', () => {
+    console.log('Bot đã vào game');
+    if (bot.entities) bot.entities = {};
   });
 
-  client.on('disconnect', (reason) => {
-    console.log('Bot bị mất kết nối:', reason);
-    console.log('Đang thử kết nối lại sau 15 giây...');
-    setTimeout(startBot, 15000);
+  bot.on('kicked', (reason) => {
+    console.log('Bị kick:', typeof reason === 'object' ? JSON.stringify(reason) : reason);
   });
 
-  client.on('error', (err) => {
-    console.error('Lỗi kết nối bot:', err);
+  bot.on('error', (err) => {
+    console.log('Lỗi:', err.message);
+  });
+
+  bot.on('end', () => {
+    console.log('Mất kết nối, sẽ vào lại sau 15s...');
+    scheduleReconnect();
   });
 }
 
-startBot();
+function scheduleReconnect() {
+  if (reconnectTimeout) return;
+  reconnectTimeout = setTimeout(() => {
+    reconnectTimeout = null;
+    createBot();
+  }, CONFIG.reconnectDelay);
+}
+
+process.on('uncaughtException', (err) => console.log('Uncaught:', err.message));
+process.on('unhandledRejection', (reason) => console.log('Rejection:', reason));
+
+http.createServer((req, res) => {
+  res.writeHead(200);
+  res.end('Bot is alive');
+}).listen(process.env.PORT || 10000, () => {
+  console.log('Keep-alive chạy trên cổng', process.env.PORT || 10000);
+});
+
+createBot();
